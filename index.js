@@ -13,30 +13,67 @@ app.get("/",(req,res)=>{
 const server=http.createServer(app);
 const io=socketIO(server);
 
-let count = 0;
+app.get('/', (req, res) => {
+    res.send('Socket.IO Server is running.');
+  });
 
-io.on('connection', socket => {
-  console.log('Client connected');
+  let count = 0;
   
-  // Send the initial count to the connected client
-  socket.emit('countUpdate', count);
+  io.on('connection', (socket) => {
+    console.log('Client connected');
 
-  socket.on('increaseCount', () => {
-    count++;
-    // Broadcast the updated count to all connected clients
-    io.emit('countUpdate', count);
+            // Send the initial count to the connected client
+        socket.emit('countUpdate', count);
+
+        socket.on('increaseCount', () => {
+            count++;
+            // Broadcast the updated count to all connected clients
+            io.emit('countUpdate', count);
+        });
+
+        socket.on('decreaseCount', () => {
+            count--;
+            // Broadcast the updated count to all connected clients
+            io.emit('countUpdate', count);
+        });
+
+  
+    socket.on('updateData', (updatedData) => {
+      // Process the updated data on the server if needed
+  
+      // Broadcast the updated data to all connected clients
+      io.emit('dataUpdate', updatedData);
+    });
+  
+    socket.on('disconnect', () => {
+      console.log('Client disconnected');
+    });
   });
 
-  socket.on('decreaseCount', () => {
-    count--;
-    // Broadcast the updated count to all connected clients
-    io.emit('countUpdate', count);
-  });
+// let count = 0;
 
-  socket.on('disconnect', () => {
-    console.log('Client disconnected');
-  });
-});
+// io.on('connection', socket => {
+//   console.log('Client connected');
+  
+//   // Send the initial count to the connected client
+//   socket.emit('countUpdate', count);
+
+//   socket.on('increaseCount', () => {
+//     count++;
+//     // Broadcast the updated count to all connected clients
+//     io.emit('countUpdate', count);
+//   });
+
+//   socket.on('decreaseCount', () => {
+//     count--;
+//     // Broadcast the updated count to all connected clients
+//     io.emit('countUpdate', count);
+//   });
+
+//   socket.on('disconnect', () => {
+//     console.log('Client disconnected');
+//   });
+// });
 
 
 server.listen(port,()=>{
